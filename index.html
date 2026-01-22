@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اجتماع شباب ثانوى</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #f0f2f5; }
+        .whatsapp-btn { background-color: #25D366; color: white; }
+        .whatsapp-btn:hover { background-color: #128C7E; }
+        .call-btn { background-color: #3b82f6; color: white; }
+        .call-btn:hover { background-color: #2563eb; }
+        .hidden-app { display: none; }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="h-screen overflow-hidden text-gray-800">
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50 transition-opacity duration-500">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md text-center border-4 border-blue-500/20">
+            <div class="mb-6 flex justify-center">
+                <div class="bg-blue-100 p-4 rounded-full ring-4 ring-blue-50">
+                    <!-- أيقونة القفل كما هي -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                </div>
+            </div>
+            <!-- العنوان الجديد -->
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">اجتماع شباب ثانوى</h2>
+            
+            <form onsubmit="checkPassword(event)" class="space-y-4">
+                <div class="text-right">
+                    <label class="block text-gray-600 text-sm font-bold mb-2 mr-1">رمز الدخول:</label>
+                    <input type="password" id="passwordInput" 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-center text-lg tracking-widest"
+                        placeholder="أدخل الرمز هنا" required>
+                </div>
+                <p id="errorMsg" class="text-red-500 text-sm hidden font-bold bg-red-50 p-2 rounded">رمز الدخول غير صحيح!</p>
+                <button type="submit" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg transition transform active:scale-95 flex justify-center items-center gap-2">
+                    <span>دخول</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="hidden-app h-full flex flex-col p-2 md:p-4 bg-gray-100">
+        <div class="max-w-7xl mx-auto w-full bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200 flex flex-col h-full max-h-[95vh]">
+            
+            <!-- Header & Controls -->
+            <div class="bg-slate-800 p-3 text-white shadow-lg z-10 shrink-0">
+                <div class="flex justify-between items-center mb-3 border-b border-slate-600 pb-2">
+                    <h1 class="text-lg font-bold flex items-center gap-2 text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        قائمة الافتقاد
+                    </h1>
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-2 bg-slate-700 px-3 py-1 rounded text-sm border border-slate-600">
+                            <span class="text-gray-300 text-xs">العدد:</span>
+                            <span id="countDisplay" class="font-bold text-green-400">0</span>
+                        </div>
+                        <button onclick="logout()" class="text-xs bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition shadow flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            خروج
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-4 gap-4 items-start">
+                    <!-- Message Area -->
+                    <div class="md:col-span-3 space-y-1">
+                        <label class="block text-xs font-semibold text-gray-400 mb-1">نص الرسالة:</label>
+                        <div class="relative">
+                            <textarea id="messageTemplate" rows="4" 
+                                class="w-full p-3 text-gray-900 border-0 rounded-md focus:ring-2 focus:ring-green-500 outline-none text-base resize-none shadow-inner transition-all duration-300"
+                                placeholder="اكتب رسالتك هنا.. استخدم @name للاسم"></textarea>
+                            <div class="absolute bottom-2 left-2 opacity-50 hover:opacity-100 transition cursor-help" title="سيتم استبدال @name باسم الشخص الأول">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <!-- Search Box -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 mb-1">بحث (اسم/رقم):</label>
+                            <div class="relative">
+                                <input type="text" id="searchInput" placeholder="ابحث هنا..." 
+                                    class="w-full p-2 pl-8 text-gray-900 rounded bg-gray-100 border-none outline-none text-sm focus:bg-white focus:ring-2 focus:ring-blue-400 transition">
+                                <svg class="absolute left-2 top-2.5 text-gray-400 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Group Filter -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 mb-1">تصفية بالمجموعة:</label>
+                            <select id="groupFilter" class="w-full p-2 text-gray-900 rounded bg-gray-100 border-none outline-none text-sm cursor-pointer hover:bg-white transition">
+                                <option value="all">-- كل المجموعات --</option>
+                                <option value="المجموعة الأولى (شارع الحصة)">المجموعة الأولى (شارع الحصة)</option>
+                                <option value="المجموعة الثانية (شارع الجسر)">المجموعة الثانية (شارع الجسر)</option>
+                                <option value="المجموعة الثالثة (الكنيسة)">المجموعة الثالثة (الكنيسة)</option>
+                                <option value="المجموعة الرابعة (الكفرة الشرقية)">المجموعة الرابعة (الكفرة الشرقية)</option>
+                                <option value="المجموعة الخامسة (الجامع)">المجموعة الخامسة (الجامع)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Header -->
+            <div class="bg-gray-100 border-b border-gray-200 px-4 py-2 grid grid-cols-12 gap-2 text-xs font-bold text-gray-600 uppercase tracking-wider sticky top-0 z-0">
+                <div class="col-span-1 text-center">#</div>
+                <div class="col-span-3">الاسم / المجموعة</div>
+                <div class="col-span-4">معاينة الرسالة</div>
+                <div class="col-span-4 text-center">الإجراءات</div>
+            </div>
+
+            <!-- Scrollable List -->
+            <div id="contactsList" class="overflow-y-auto flex-grow bg-gray-50 p-2 space-y-2">
+                <!-- Items generated via JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Security Logic ---
+        const CORRECT_PASS = "G112009";
+
+        function checkPassword(e) {
+            e.preventDefault();
+            const input = document.getElementById('passwordInput').value;
+            const errorMsg = document.getElementById('errorMsg');
+            const loginScreen = document.getElementById('loginScreen');
+            const mainApp = document.getElementById('mainApp');
+
+            if (input === CORRECT_PASS) {
+                loginScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loginScreen.style.display = 'none';
+                    mainApp.classList.remove('hidden-app');
+                    mainApp.classList.add('animate-fade-in');
+                }, 500);
+            } else {
+                errorMsg.classList.remove('hidden');
+                document.getElementById('passwordInput').classList.add('border-red-500', 'ring-1', 'ring-red-500');
+            }
+        }
+
+        function logout() {
+            location.reload();
+        }
+
+        // --- Data Logic ---
+        const rawContacts = [
+            { group: "المجموعة الأولى (شارع الحصة)", name: "بولا ابراهيم اسحق", phone: "01067602214-01212885759" },
+            { group: "المجموعة الأولى (شارع الحصة)", name: "جوزيف القس صليب", phone: "01271041615" },
+            { group: "المجموعة الأولى (شارع الحصة)", name: "أبانوب ماهر ميخائيل الخراط", phone: "01278152716" },
+            { group: "المجموعة الأولى (شارع الحصة)", name: "مكسيموس عماد شوقی", phone: "01271073769" },
+            { group: "المجموعة الأولى (شارع الحصة)", name: "يوسف بنيامين عبدة", phone: "01270057685" },
+            { group: "المجموعة الأولى (شارع الحصة)", name: "مينا عاطف عبدالله", phone: "01225738789" },
+            { group: "المجموعة الأولى (شارع الحصة)", name: "مینا سامح سليمان", phone: "01208556907" },
+            { group: "المجموعة الأولى (شارع الحصة)", name: "ناجي أشرف ناجي", phone: "01204522300" },
+            { group: "المجموعة الأولى (شارع الحصة)", name: "عاطف هانی جونی", phone: "01228029889" },
+            { group: "المجموعة الأولى (شارع الحصة)", name: "كيرلس تادرس سلیمان", phone: "01040612930" },
+            { group: "المجموعة الأولى (شارع الحصة)", name: "مینا ابراهيم سليمان", phone: "01203132922" },
+            { group: "المجموعة الثانية (شارع الجسر)", name: "کاراس عزت عبده", phone: "01212464315" },
+            { group: "المجموعة الثانية (شارع الجسر)", name: "انطونيوس هاني أمين", phone: "01273961667" },
+            { group: "المجموعة الثانية (شارع الجسر)", name: "جوزيف أنطون القمص تكلا", phone: "01285007404" },
+            { group: "المجموعة الثانية (شارع الجسر)", name: "جيوفاني مايكل سمير", phone: "01229926687" },
+            { group: "المجموعة الثانية (شارع الجسر)", name: "يوسف باسم كمال", phone: "01229494132" },
+            { group: "المجموعة الثانية (شارع الجسر)", name: "دانیال عماد عبد السيد", phone: "01284345102" },
+            { group: "المجموعة الثانية (شارع الجسر)", name: "عزیز عزت عزیز", phone: "01024055724" },
+            { group: "المجموعة الثانية (شارع الجسر)", name: "جرجس ماهر ابراهيم", phone: "01229316066" },
+            { group: "المجموعة الثانية (شارع الجسر)", name: "توماس ماهر رفیق", phone: "01205489731" },
+            { group: "المجموعة الثانية (شارع الجسر)", name: "ابرام لوقا میخائیل", phone: "01222699894-01226925951" },
+            { group: "المجموعة الثالثة (الكنيسة)", name: "فیلمون جورج زاهر", phone: "01229561824" },
+            { group: "المجموعة الثالثة (الكنيسة)", name: "مارك ماجد مرقس", phone: "01006495462" },
+            { group: "المجموعة الثالثة (الكنيسة)", name: "بولا عزت عبد المسيح (النمس)", phone: "01205057714" },
+            { group: "المجموعة الثالثة (الكنيسة)", name: "كيرلس وليد عبده", phone: "01282347463" },
+            { group: "المجموعة الثالثة (الكنيسة)", name: "بولا عزیز میخائیل", phone: "01202978694" },
+            { group: "المجموعة الثالثة (الكنيسة)", name: "يوسف أشرف سامى", phone: "01200882524" },
+            { group: "المجموعة الثالثة (الكنيسة)", name: "جان جرجس حبشي", phone: "01204662158" },
+            { group: "المجموعة الثالثة (الكنيسة)", name: "يوسف مسيحة سلامة", phone: "01204112008" },
+            { group: "المجموعة الثالثة (الكنيسة)", name: "بيشوى سامح جرجس", phone: "01225619883-01226925991" },
+            { group: "المجموعة الثالثة (الكنيسة)", name: "كيرلس لطيف عبدة", phone: "01271797458 - 01229224631" },
+            { group: "المجموعة الرابعة (الكفرة الشرقية)", name: "كيرلس عماد نصيف", phone: "01207966144" },
+            { group: "المجموعة الرابعة (الكفرة الشرقية)", name: "یحی موسى لطيف", phone: "01203515797" },
+            { group: "المجموعة الرابعة (الكفرة الشرقية)", name: "يوسف عزت مسيحة", phone: "01224096420" },
+            { group: "المجموعة الرابعة (الكفرة الشرقية)", name: "بولا سامی نصيف", phone: "01203558162" },
+            { group: "المجموعة الرابعة (الكفرة الشرقية)", name: "سلیمان اسحق سلیمان", phone: "01207522708" },
+            { group: "المجموعة الرابعة (الكفرة الشرقية)", name: "كيرلس منير ميخائيل", phone: "01228101751" },
+            { group: "المجموعة الرابعة (الكفرة الشرقية)", name: "أبانوب ماهر صبحى", phone: "01202843476" },
+            { group: "المجموعة الرابعة (الكفرة الشرقية)", name: "بافلی نادی نصر الله", phone: "01092507117" },
+            { group: "المجموعة الرابعة (الكفرة الشرقية)", name: "جورج ايمن صبحی", phone: "01202237662" },
+            { group: "المجموعة الرابعة (الكفرة الشرقية)", name: "بیشوی مجدی میخائیل", phone: "01097126758" },
+            { group: "المجموعة الرابعة (الكفرة الشرقية)", name: "كيرلس سامی میخائیل", phone: "01096243671" },
+            { group: "المجموعة الخامسة (الجامع)", name: "توماس عطية عبده", phone: "01288050779" },
+            { group: "المجموعة الخامسة (الجامع)", name: "ناجي صبحي عطية", phone: "01205489530" },
+            { group: "المجموعة الخامسة (الجامع)", name: "کاراس میلاد عوض", phone: "01022107181" }
+        ];
+
+        // Process Data: Handle 2 numbers
+        const contacts = rawContacts.map(c => {
+            // Split by dash or space-dash-space
+            let parts = c.phone.split(/[-–]/); // Split by dash
+            
+            // Clean numbers
+            let nums = parts.map(p => p.trim().replace(/\D/g, '')).filter(n => n.length > 0);
+            
+            let waNum = "";
+            let callNum = "";
+
+            if (nums.length > 1) {
+                // First is WA, Second is Call
+                waNum = nums[0];
+                callNum = nums[1];
+            } else {
+                // Only one number for both
+                waNum = nums[0];
+                callNum = nums[0];
+            }
+
+            return {
+                ...c,
+                firstName: c.name.trim().split(' ')[0],
+                whatsappPhone: '2' + waNum,
+                callPhone: callNum
+            };
+        });
+
+        const messageInput = document.getElementById('messageTemplate');
+        const groupFilter = document.getElementById('groupFilter');
+        const searchInput = document.getElementById('searchInput');
+        const contactsList = document.getElementById('contactsList');
+        const countDisplay = document.getElementById('countDisplay');
+
+        function generateMessage(template, firstName) {
+            if (!template) return "";
+            return template.replace(/@name/g, firstName);
+        }
+
+        function renderList() {
+            const template = messageInput.value;
+            const selectedGroup = groupFilter.value;
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            
+            // Logic for Button Text and Link
+            const hasText = template && template.trim().length > 0;
+            const btnLabel = hasText ? "إرسال" : "مراسلة";
+
+            contactsList.innerHTML = '';
+
+            let filteredContacts = contacts;
+
+            // 1. Filter by Group
+            if (selectedGroup !== 'all') {
+                filteredContacts = filteredContacts.filter(c => c.group === selectedGroup);
+            }
+
+            // 2. Filter by Search (Name OR Phone OR WhatsApp)
+            if (searchTerm) {
+                filteredContacts = filteredContacts.filter(c => 
+                    c.name.toLowerCase().includes(searchTerm) || 
+                    c.whatsappPhone.includes(searchTerm) || 
+                    c.callPhone.includes(searchTerm) ||
+                    // Also check original phone string just in case
+                    c.phone.includes(searchTerm)
+                );
+            }
+
+            countDisplay.innerText = filteredContacts.length;
+
+            filteredContacts.forEach((contact, index) => {
+                const message = generateMessage(template, contact.firstName);
+                
+                // WhatsApp Link Logic
+                const waLink = hasText 
+                    ? `https://wa.me/${contact.whatsappPhone}?text=${encodeURIComponent(message)}`
+                    : `https://wa.me/${contact.whatsappPhone}`;
+
+                const callLink = `tel:${contact.callPhone}`;
+
+                // Using CSS Grid for layout inside the row
+                const row = `
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-2 hover:shadow-md transition grid grid-cols-12 gap-2 items-center group">
+                        
+                        <div class="col-span-1 text-center font-mono text-gray-400 text-xs">
+                            ${index + 1}
+                        </div>
+
+                        <div class="col-span-3">
+                            <div class="font-bold text-gray-800 text-sm">${contact.name}</div>
+                            <div class="text-[10px] text-gray-500 bg-gray-100 inline-block px-1 rounded mt-0.5">${contact.group}</div>
+                        </div>
+
+                        <div class="col-span-4">
+                            <div class="bg-gray-50 p-2 rounded border border-gray-200 text-xs text-gray-600 truncate min-h-[28px] flex items-center" title="${message}">
+                                ${message || '<span class="text-gray-300">...</span>'}
+                            </div>
+                        </div>
+
+                        <div class="col-span-4 flex justify-center gap-2">
+                            <!-- Call Button -->
+                            <a href="${callLink}" class="call-btn flex items-center justify-center gap-1 w-20 py-1.5 rounded-md font-bold shadow-sm text-xs transition active:scale-95" title="اتصال: ${contact.callPhone}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                اتصال
+                            </a>
+
+                            <!-- WhatsApp Button -->
+                            <a href="${waLink}" target="_blank" class="whatsapp-btn flex items-center justify-center gap-1 w-20 py-1.5 rounded-md font-bold shadow-sm text-xs transition active:scale-95">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                                ${btnLabel}
+                            </a>
+                        </div>
+
+                    </div>
+                `;
+                contactsList.innerHTML += row;
+            });
+        }
+
+        messageInput.addEventListener('input', renderList);
+        groupFilter.addEventListener('change', renderList);
+        searchInput.addEventListener('input', renderList); // Listen to search input
+        renderList();
+    </script>
+</body>
+</html>
